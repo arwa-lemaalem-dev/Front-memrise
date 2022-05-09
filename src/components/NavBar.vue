@@ -48,10 +48,10 @@
             data-mdb-toggle="dropdown"
             aria-expanded="false"
           >
-            <img
-              src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+            <img :src="this.$store.getters.urlBackend+this.$store.state.user['avatar']"
               class="rounded-circle"
-              height="25"
+              height="40"
+              width="50"
               alt="Black and White Portrait of a Man"
               loading="lazy"
             />

@@ -10,6 +10,10 @@ export default new Vuex.Store({
     getters:{
         isLogged (state) {
             return state.authenticated
+        },
+        urlBackend()
+        {
+            return "http://localhost/backend_memrise/public/storage";
         }
     },
     plugins: [createPersistedState()],
