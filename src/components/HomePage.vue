@@ -16,7 +16,7 @@
             /></i>
           </div>
           <div class="content-card">
-            <h5 class="features-title">Liste de choses à faire</h5>
+            <h5 class="features-title">Liste des tâches</h5>
             <p>Mis à jour à : 20-03-2022</p>
           </div>
         </div>
@@ -62,6 +62,7 @@
         </div>
       </div>
     </div>
+    <!-- Button for add project -->
     <button
       class="main-button-slider"
       data-mdb-toggle="modal"
@@ -69,6 +70,7 @@
     >
       Ajouter une application
     </button>
+    <!-- Table for listing Projects -->
     <div class="table-tache">
       <table class="table table-hover">
         <thead class="bg-light">
@@ -77,47 +79,57 @@
             <th>Date limite de projet</th>
             <th>Tâche courante</th>
             <th>Statut</th>
-            <th>actions</th>
+            <th>Etat</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr v-if="projects.length == 0" scope="row">
+            <td colspan="5" class="empty">Empty</td>
+          </tr>
+          <tr v-else v-for="project in projects" :key="project.id">
             <td>
-              <div class="d-flex align-items-center">
-                <img
-                  src="https://mdbootstrap.com/img/new/avatars/8.jpg"
-                  alt=""
-                  style="width: 45px; height: 45px"
-                  class="rounded-circle"
-                />
-                <div class="ms-3">
-                  <p class="fw-bold mb-1">Bazar</p>
-                  <a
-                    class="text-muted mb-0"
-                    href="http://localhost/p3427_marketplace_for_agricultural_sector/public/admin/"
-                    target="_blanck"
-                    >lien de l'application</a
-                  >
+              <div class="d-flex flex-row">
+                <div class="p-2">
+                  <img
+                    :src="this.$store.getters.urlBackend + project.logo"
+                    alt=""
+                    style="width: 45px; height: 45px"
+                    class="rounded-circle"
+                  />
+                </div>
+
+                <div class="ms-3 col">
+                  <div class="row">
+                    <p class="fw-bold mb-1">{{ project.name_project }}</p>
+                  </div>
+                  <div  class="row">
+                    <a
+                      class="text-muted mb-0"
+                      href="http://localhost/p3427_marketplace_for_agricultural_sector/public/admin/"
+                      target="_blanck"
+                      >{{ project.url }}</a
+                    >
+                  </div>
                 </div>
               </div>
             </td>
             <td>
-              <p class="fw-normal mb-1">2022-05-10</p>
+              <p class="fw-normal mb-1">{{ project.deadline }}</p>
             </td>
             <td>
-              <p class="fw-normal mb-1">Gestion des FAQ</p>
+              <p class="fw-normal mb-1">-----------------</p>
             </td>
             <td>
-              <span class="badge rounded-pill badge-success">En cours</span>
+              <span class="badge rounded-pill badge-success">
+                {{ project.status }}
+              </span>
             </td>
             <td>
-              <router-link to="/login"
-                ><i class="fa fa-times fa-2x"></i
-              ></router-link>
+              <button><i class="fa fa-times fa-2x" title="Annuler"></i></button>
               &emsp;
-              <router-link :to="{ name: '' }"
-                ><i class="fas fa-check fa-2x"></i
-              ></router-link>
+              <button :to="{ name: '' }">
+                <i class="fas fa-check fa-2x" title="Terminé"></i>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -151,7 +163,8 @@
                   type="text"
                   v-model.trim="add_project.name_project"
                   class="__input"
-                  placeholder="Nom du projet" required
+                  placeholder="Nom du projet"
+                  required
                 />
                 <p
                   v-show="show_alert"
@@ -167,7 +180,8 @@
                   v-model.trim="add_project.deadline"
                   class="__input"
                   placeholder="Date limite de projet"
-                  onfocus="(this.type='date')" required
+                  onfocus="(this.type='date')"
+                  required
                 />
                 <p
                   v-show="show_alert"
@@ -175,6 +189,30 @@
                   v-if="v$.deadline.$error"
                 >
                   {{ v$.deadline.$errors[0].$message }}
+                </p>
+              </div>
+              <div class="__form">
+                <input
+                  type="url"
+                  v-model.trim="add_project.url"
+                  class="__input"
+                  placeholder="URL du projet"
+                  required
+                />
+                <p v-show="show_alert" class="text-danger" v-if="v$.url.$error">
+                  {{ v$.url.$errors[0].$message }}
+                </p>
+              </div>
+              <div class="__form">
+                <input
+                  type="file"
+                  class="__input form-control"
+                  placeholder="Logo du projet"
+                  @change="uploadLogo"
+                  required
+                />
+                <p v-show="show_alert" class="text-danger" v-if="v$.url.$error">
+                  {{ v$.url.$errors[0].$message }}
                 </p>
               </div>
             </div>
@@ -213,12 +251,15 @@ export default {
   data() {
     return {
       show_alert: true,
+      logo: null,
+      projects: [],
     };
   },
   setup() {
     const add_project = reactive({
       name_project: null,
       deadline: null,
+      url: null,
     });
     const rules = computed(() => {
       return {
@@ -227,19 +268,23 @@ export default {
           required,
           minValue: helpers.withMessage(
             "The deadline must be greater than the current date",
-            helpers.withAsync(async (value) => {
+            (value) => {
               return new Date(value) > new Date();
-            })
+            }
           ),
           sameAs: sameAs(add_project.deadline),
         },
+        url: { required, sameAs: sameAs(add_project.url) },
       };
     });
     const v$ = useValidate(rules, add_project);
     return { add_project, v$ };
   },
   methods: {
-    redirect_route() {
+    uploadLogo: function (event) {
+      this.logo = event.target.files[0];
+    },
+    redirect_route: function () {
       if (this.$store.getters.isLogged == false) {
         this.$router.push({ name: "login" });
       }
@@ -255,14 +300,24 @@ export default {
       const promise1 = Promise.resolve(this.v$.$validate());
       promise1.then((value) => {
         if (value == true) {
+          let formData = new FormData();
+          formData.append("logo", this.logo);
+          formData.append("url", this.add_project.url);
+          formData.append("deadline", this.add_project.deadline);
+          formData.append("name_project", this.add_project.name_project);
           axiosClient
-            .post("/project/create-project", {
-              deadline: this.add_project.deadline,
-              name_project: this.add_project.name_project,
+            .post("/project/create-project", formData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                charset: "utf-8",
+                boundary: Math.random().toString().substr(2),
+              },
             })
             .then((response) => {
               if (response.data["status"] == 200) {
-                this.resetForm();
+                this.$refs.form_add.reset();
+                //get list of projects
+                this.GetListProjects();
                 this.$toast.show(response.data["response"], {
                   type: "success",
                   position: "top-right",
@@ -272,9 +327,24 @@ export default {
         }
       });
     },
+    GetListProjects: function () {
+      let response = axiosClient.get("/auth/show-projects");
+      const list_projects = Promise.resolve(response);
+      list_projects.then((value) => {
+        if (value.data["status"] == 200) {
+          this.projects = value.data["projects"];
+          console.log(value.data);
+        } else {
+          //
+        }
+      });
+    },
   },
   mounted() {
+    //redirect after create instance ( if session expired /if user authenticated  or no)
     this.redirect_route();
+    //get list of projects
+    this.GetListProjects();
   },
 };
 </script>
@@ -282,6 +352,22 @@ export default {
 @import "../assets/css/bootstrap.min.css";
 /* @import '../assets/css/font-awesome.css'; */
 /* @import "../assets/css/templatemo-softy-pinko.css"; */
+.row{
+  position : relative; 
+  left : auto;
+}
+.empty {
+  color: #ffb6c1;
+  direction: ltr;
+  font-family: cursive;
+  font-size: 25px;
+  font-weight: normal;
+  letter-spacing: normal;
+  line-height: 120%;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 0.5%;
+}
 button {
   border: 0px;
   background-color: transparent;
@@ -290,6 +376,9 @@ button {
   padding: 10px 0px;
   position: relative;
   margin-left: -10%;
+}
+input.__input.form-control {
+  margin-left: 14%;
 }
 .__input {
   border: none;
