@@ -3,7 +3,8 @@
     <div class="row">
       <div
         class="col-lg-4 col-md-6 col-sm-6 col-12 option-card"
-        data-scroll-reveal="enter bottom move 50px over 0.6s after 0.2s"
+        data-scroll-reveal="enter bottom move 50px over 0.6s after 0.2s" 
+        v-on:click="redirect('to-do-list')"
       >
         <div class="features-small-item">
           <div class="icon">
@@ -15,10 +16,10 @@
                 height="70%"
             /></i>
           </div>
-          <div class="content-card">
-            <h5 class="features-title">Liste des tâches</h5>
-            <p>Mis à jour à : 20-03-2022</p>
-          </div>
+            <div class="content-card">
+              <h5 class="features-title">Liste des tâches</h5>
+              <p>Mis à jour à : 20-03-2022</p>
+            </div>
         </div>
       </div>
       <div
@@ -102,7 +103,7 @@
                   <div class="row">
                     <p class="fw-bold mb-1">{{ project.name_project }}</p>
                   </div>
-                  <div  class="row">
+                  <div class="row">
                     <a
                       class="text-muted mb-0"
                       href="http://localhost/p3427_marketplace_for_agricultural_sector/public/admin/"
@@ -228,7 +229,7 @@
                 </button>
               </div>
               <div class="col">
-                <button @click="AddProject">
+                <button @click="addProject">
                   <i class="fas fa-check fa-2x"></i>
                 </button>
               </div>
@@ -294,7 +295,7 @@ export default {
       this.$refs.form_add.reset();
       this.show_alert = false;
     },
-    AddProject: function (e) {
+    addProject: function (e) {
       e.preventDefault();
       this.v$.$validate();
       const promise1 = Promise.resolve(this.v$.$validate());
@@ -317,7 +318,7 @@ export default {
               if (response.data["status"] == 200) {
                 this.$refs.form_add.reset();
                 //get list of projects
-                this.GetListProjects();
+                this.getListProjects();
                 this.$toast.show(response.data["response"], {
                   type: "success",
                   position: "top-right",
@@ -327,7 +328,7 @@ export default {
         }
       });
     },
-    GetListProjects: function () {
+    getListProjects: function () {
       let response = axiosClient.get("/auth/show-projects");
       const list_projects = Promise.resolve(response);
       list_projects.then((value) => {
@@ -339,12 +340,17 @@ export default {
         }
       });
     },
+    redirect:function(page){
+      this.$router.push({name:page});
+    }
   },
   mounted() {
     //redirect after create instance ( if session expired /if user authenticated  or no)
     this.redirect_route();
-    //get list of projects
-    this.GetListProjects();
+    if (this.$store.getters.isLogged) {
+      //get list of projects
+      this.getListProjects();
+    }
   },
 };
 </script>
@@ -352,9 +358,9 @@ export default {
 @import "../assets/css/bootstrap.min.css";
 /* @import '../assets/css/font-awesome.css'; */
 /* @import "../assets/css/templatemo-softy-pinko.css"; */
-.row{
-  position : relative; 
-  left : auto;
+.row {
+  position: relative;
+  left: auto;
 }
 .empty {
   color: #ffb6c1;

@@ -23,7 +23,7 @@
             <router-link
               class="nav-link"
               :to="{ name: 'login' }"
-              v-show="!this.$store.state.user"
+              v-show="!this.$store.getters.isLogged"
               >Se Connecter</router-link
             >
           </li>
@@ -31,7 +31,7 @@
             <router-link
               class="nav-link"
               :to="{ name: 'register' }"
-              v-show="!this.$store.state.user"
+              v-show="!this.$store.getters.isLogged"
               >S'inscrire</router-link
             >
           </li>
@@ -39,7 +39,7 @@
       </div>
 
       <div class="d-flex align-items-center">
-        <div class="dropdown" v-show="this.$store.state.user">
+        <div class="dropdown" v-show="this.$store.getters.isLogged">
           <router-link
             class="dropdown-toggle d-flex align-items-center hidden-arrow"
             id="navbarDropdownMenuAvatar"
@@ -48,7 +48,7 @@
             data-mdb-toggle="dropdown"
             aria-expanded="false"
           >
-            <img :src="this.$store.getters.urlBackend+this.$store.state.user['avatar']"
+            <img v-if="this.$store.getters.isLogged" :src="this.$store.getters.urlBackend+this.$store.state.user['avatar']"
               class="rounded-circle"
               height="40"
               width="50"
@@ -100,7 +100,6 @@ export default {
       response_logout.then((value) => {
         if (value.data["status"] == 200) {
           this.$store.commit("logout");
-          this.$router.push({ name: "login" });
         } else {
           this.$toast.show("Erreur du serveur \n Réessayer s'il vous plaît", {
             type: "error",

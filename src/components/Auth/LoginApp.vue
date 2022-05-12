@@ -10,7 +10,8 @@
               id="email"
               placeholder="name@example.com"
               v-model="state.email"
-              class="form-control" required
+              class="form-control"
+              required
             />
             <label for="email">Adresse e-mail</label>
             <span class="text-danger" v-if="v$.email.$error">{{
@@ -24,7 +25,8 @@
               id="password"
               placeholder="password"
               class="form-control"
-              v-model="state.password" required
+              v-model="state.password"
+              required
             />
             <label class="form-label" for="password">Mot de passe</label>
             <span class="text-danger" v-if="v$.password.$error">{{
@@ -32,7 +34,7 @@
             }}</span>
           </div>
 
-          <div class=" container forgot_password">
+          <div class="container forgot_password">
             <router-link
               :to="{ name: 'forgot-password' }"
               class="forgot_password text-color"
@@ -99,8 +101,8 @@ export default {
         var type = "";
         if (value_login.data["status"] == 200) {
           type = "success";
-          this.$store.commit("setAuth", value_login.data);
           this.$refs.form_login.reset();
+          this.$store.commit("setAuth", value_login.data);
         } else {
           type = "error";
         }
@@ -121,9 +123,9 @@ export default {
   border-color: transparent;
   box-shadow: none;
 }
-.form-control{
-  border-width:0px;
-  border:none;
+.form-control {
+  border-width: 0px;
+  border: none;
 }
 .text-color {
   color: #e9967a;

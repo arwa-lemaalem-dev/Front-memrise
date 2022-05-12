@@ -8,10 +8,12 @@ import ResetPasswordVue from '@/components/Auth/RsetPassword/ResetPassword.vue';
 import IndexProfile from '@/components/User/IndexProfile.vue';
 
 import store from '@/store';
+import ToDoListVue from '@/components/ToDoList.vue';
 const routes = [
     {
         path: '/',
         redirect: 'home',
+        meta: { requiresAuth: true }
     },
     {
         path: '/register',
@@ -51,6 +53,12 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
+        path: '/to-do-list',
+        name: 'to-do-list',
+        component: ToDoListVue,
+        meta: { requiresAuth: true }
+    },
+    {
         path: '/profile',
         name: 'profile',
         component: IndexProfile,
@@ -65,6 +73,7 @@ const routes = [
     {
         path: '/logout',
         name: 'logout',
+        meta: { requiresAuth: true }
     },
     {
         path: '/:pathMatch(.*)*',
@@ -83,14 +92,16 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    if (!to.meta.requiresAuth && store.getters.isLogged && to.name!=='notFound') {
-        next({
-            name: 'home',
-            replace: true
-        });
+    if (store.getters.isLogged && to.name !== 'notFound') {
+        if (to.meta.requiresAuth == false) {
+            next({
+                name: 'home',
+            });
+        } else {
+            next();
+        }
     }
-    else
-    {
+    else {
         next();
     }
 });
