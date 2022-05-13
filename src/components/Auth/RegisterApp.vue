@@ -190,7 +190,7 @@ export default {
           promise_res.then((value_res) => {
             console.log(value_res);
             var type = "";
-            if (value_res.data["status"] == 200) {
+            if (value_res.data["status"] == 201) {
               type = "success";
               this.$refs.form_register.reset();
             } else {

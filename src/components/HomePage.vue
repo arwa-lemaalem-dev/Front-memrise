@@ -9,7 +9,7 @@
         <div class="features-small-item">
           <div class="icon">
             <i
-              ><img
+              ><img  
                 src="@/assets/images/todo.png"
                 alt=""
                 width="70%"
@@ -315,7 +315,7 @@ export default {
               },
             })
             .then((response) => {
-              if (response.data["status"] == 200) {
+              if (response.data["status"] == 201) {
                 this.$refs.form_add.reset();
                 //get list of projects
                 this.getListProjects();
@@ -428,6 +428,9 @@ input.__input.form-control {
 }
 .table-tache {
   border-radius: 50% 20% / 10% 40%;
+}
+table{
+    background-color: rgb(255, 255, 255, 0.7 );
 }
 .main-button-slider {
   border: 0px;

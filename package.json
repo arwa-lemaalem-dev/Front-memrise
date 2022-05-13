@@ -20,6 +20,7 @@
     "mdb-ui-kit": "^3.11.0",
     "mdb-vue-ui-kit": "^1.11.0",
     "popper.js": "^1.16.1",
+    "v-reset-input": "^1.1.2",
     "vue": "^3.2.31",
     "vue-mdbootstrap": "^1.2.1",
     "vue-router": "^4.0.14",

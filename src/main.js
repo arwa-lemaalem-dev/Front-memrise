@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router/index.js';
 import store from './store';
 import Vuex from 'vuex';
+
 //Front
 // import 'mdb-vue-ui-kit/css/mdb.min.css';
 import BootstrapVue3 from 'bootstrap-vue-3';
