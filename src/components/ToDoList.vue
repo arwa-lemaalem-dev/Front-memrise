@@ -43,9 +43,12 @@
             <span class="label">{{ task.name }}</span>
           </label>
           <button
+            :style="
+              task.current_task == 1 ? 'background-color:green;color:white' : ''
+            "
             class="current-task-btn"
             title="Current Task"
-            @click="setCurrentTaask(task.id)"
+            @click="setCurrentTask(task.id)"
           >
             Current
           </button>
@@ -150,14 +153,38 @@ export default {
       });
     },
     updateStateTask: function (id) {
-      console.log("test");
       let response = axiosClient.post("/auth/update-task", {
         task_id: id,
       });
       const update_task = Promise.resolve(response);
       update_task.then((value) => {
+        if (value.data["status"] != 200) {
+          this.$toast.show(
+            "Erreur de serveur , Actualiser la page s'il vous plait",
+            {
+              type: "error",
+              position: "top-right",
+            }
+          );
+        }
+      });
+    },
+    setCurrentTask: function (id) {
+      let response = axiosClient.post("/auth/update-task-current", {
+        task_id: id,
+      });
+      const update_task_current = Promise.resolve(response);
+      update_task_current.then((value) => {
         if (value.data["status"] == 200) {
-          console.log("ttt");
+          this.getTasksOfProject();
+        } else {
+          this.$toast.show(
+            "Erreur de serveur , Actualiser la page s'il vous plait",
+            {
+              type: "error",
+              position: "top-right",
+            }
+          );
         }
       });
     },
@@ -202,10 +229,25 @@ export default {
   border-radius: 20px;
   font-size: 15px;
   display: block;
-}
-.current-task-btn.delete-btn {
+  margin-left: auto;
+  margin-right: 30px;
   position: relative;
-  width: 60%;
+}
+.current-task-btn:focus {
+  background-color: green;
+  color: white;
+}
+.delete-btn {
+  /* margin-left: auto; */
+  margin-right: 2px;
+  display: block;
+  width: 28px;
+  height: 28px;
+  padding-left: 5%;
+  background-image: url("../assets/images/trash.png");
+  background-repeat: no-repeat;
+  background-size: 28px;
+  cursor: pointer;
 }
 .form-select {
   background-color: transparent;
@@ -285,18 +327,6 @@ option {
   line-height: 24px;
   position: relative;
   transition: 0.2s;
-  cursor: pointer;
-}
-.delete-btn {
-  margin-left: auto;
-  margin-right: 5px;
-  display: block;
-  width: 28px;
-  height: 28px;
-  padding-left: 5%;
-  background-image: url("../assets/images/trash.png");
-  background-repeat: no-repeat;
-  background-size: 28px;
   cursor: pointer;
 }
 .label {

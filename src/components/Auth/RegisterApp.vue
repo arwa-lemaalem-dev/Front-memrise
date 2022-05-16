@@ -1,4 +1,4 @@
-<template >
+<template>
   <div class="container">
     <div class="card">
       <div class="card-body">
@@ -87,7 +87,7 @@
             />
           </div>
           <button type="submit" class="btn btn-block mb-4 btn-rounded">
-            S'identifier
+            S'inscrire
           </button>
 
           <div class="forgot_password text-color">

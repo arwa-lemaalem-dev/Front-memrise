@@ -3,23 +3,23 @@
     <div class="row">
       <div
         class="col-lg-4 col-md-6 col-sm-6 col-12 option-card"
-        data-scroll-reveal="enter bottom move 50px over 0.6s after 0.2s" 
+        data-scroll-reveal="enter bottom move 50px over 0.6s after 0.2s"
         v-on:click="redirect('to-do-list')"
       >
         <div class="features-small-item">
           <div class="icon">
             <i
-              ><img  
+              ><img
                 src="@/assets/images/todo.png"
                 alt=""
                 width="70%"
                 height="70%"
             /></i>
           </div>
-            <div class="content-card">
-              <h5 class="features-title">Liste des tâches</h5>
-              <p>Mis à jour à : 20-03-2022</p>
-            </div>
+          <div class="content-card">
+            <h5 class="features-title">Liste des tâches</h5>
+            <p>Mis à jour à : 20-03-2022</p>
+          </div>
         </div>
       </div>
       <div
@@ -80,7 +80,7 @@
             <th>Date limite de projet</th>
             <th>Tâche courante</th>
             <th>Statut</th>
-            <th>Etat</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -118,18 +118,20 @@
               <p class="fw-normal mb-1">{{ project.deadline }}</p>
             </td>
             <td>
-              <p class="fw-normal mb-1">-----------------</p>
+              <p class="fw-normal mb-1" v-if="project.task != null">
+                {{ project.task.name }}
+              </p>
+              <p class="fw-normal mb-1" v-else>------------------</p>
             </td>
+
             <td>
               <span class="badge rounded-pill badge-success">
                 {{ project.status }}
               </span>
             </td>
             <td>
-              <button><i class="fa fa-times fa-2x" title="Annuler"></i></button>
-              &emsp;
-              <button :to="{ name: '' }">
-                <i class="fas fa-check fa-2x" title="Terminé"></i>
+              <button data-mdb-toggle="modal" data-mdb-target="#suppModel">
+                <i class="fa fa-times fa-2x" title="Supprimer"></i>
               </button>
             </td>
           </tr>
@@ -212,9 +214,6 @@
                   @change="uploadLogo"
                   required
                 />
-                <p v-show="show_alert" class="text-danger" v-if="v$.url.$error">
-                  {{ v$.url.$errors[0].$message }}
-                </p>
               </div>
             </div>
             <div class="footer row">
@@ -235,6 +234,26 @@
               </div>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+    <!-- Delete Project -->
+    <div
+      class="modal fade"
+      id="suppModel"
+      tabindex="-1"
+      aria-labelledby="suppModelLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            Voulez-vous supprimer cette application ?
+          </div>
+          <div class="row container btn-modal">
+            <div class="col"><button>Annuler</button></div>
+            <div class="col"><button>Ok</button></div>
+          </div>
         </div>
       </div>
     </div>
@@ -316,9 +335,10 @@ export default {
             })
             .then((response) => {
               if (response.data["status"] == 201) {
-                this.$refs.form_add.reset();
                 //get list of projects
                 this.getListProjects();
+                this.$refs.form_add.reset();
+
                 this.$toast.show(response.data["response"], {
                   type: "success",
                   position: "top-right",
@@ -340,9 +360,9 @@ export default {
         }
       });
     },
-    redirect:function(page){
-      this.$router.push({name:page});
-    }
+    redirect: function (page) {
+      this.$router.push({ name: page });
+    },
   },
   mounted() {
     //redirect after create instance ( if session expired /if user authenticated  or no)
@@ -429,8 +449,8 @@ input.__input.form-control {
 .table-tache {
   border-radius: 50% 20% / 10% 40%;
 }
-table{
-    background-color: rgb(255, 255, 255, 0.7 );
+table {
+  background-color: rgb(255, 255, 255, 0.7);
 }
 .main-button-slider {
   border: 0px;
