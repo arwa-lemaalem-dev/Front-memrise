@@ -60,15 +60,17 @@
           >
         </li>
       </ul>
-      <div class="filter-btn" v-if="this.tasks.length >= 1">
-        <button type="submit" class="filter-btn-btn">All</button>
-        <button type="submit" class="filter-btn-btn">Complete</button>
-        <button type="submit" class="filter-btn-btn">Incomplete</button>
-      </div>
+      <!-- <div class="filter-btn" v-if="this.tasks.length >= 1">
+        <button type="submit" class="filter-btn-btn" @click="filterProjects(2)">All</button>
+        <button type="submit" class="filter-btn-btn" @click="filterProjects(1)">Complete</button>
+        <button type="submit" class="filter-btn-btn" @click="filterProjects(0)">Incomplete</button>
+      </div> -->
     </div>
   </div>
 </template>
-
+<!-- all=>2
+complete=>1
+incomplete=>2 -->
 <script>
 import axiosClient from "@/axios";
 export default {
@@ -84,7 +86,7 @@ export default {
   },
   methods: {
     getListProjects: function () {
-      let response = axiosClient.get("/auth/show-projects");
+      let response = axiosClient.get("/project/show-projects");
       const list_projects = Promise.resolve(response);
       list_projects.then((value) => {
         if (value.data["status"] == 200) {
@@ -93,7 +95,7 @@ export default {
       });
     },
     getTasksOfProject: function () {
-      let response = axiosClient.get("/auth/show-tasks-project", {
+      let response = axiosClient.get("/tasks-project/show-tasks-project", {
         params: {
           project_id: this.project_id,
         },
@@ -110,7 +112,7 @@ export default {
         if (!this.new_task) {
           return;
         }
-        let response = axiosClient.post("/auth/add-task", {
+        let response = axiosClient.post("/tasks-project/add-task", {
           project_id: this.project_id,
           title: this.new_task,
         });
@@ -138,7 +140,7 @@ export default {
       }
     },
     deleteItem: function (task) {
-      let response = axiosClient.post("/auth/delete-task", {
+      let response = axiosClient.post("/tasks-project/delete-task", {
         task_id: this.tasks[this.tasks.indexOf(task)].id,
       });
       const delete_task = Promise.resolve(response);
@@ -153,7 +155,7 @@ export default {
       });
     },
     updateStateTask: function (id) {
-      let response = axiosClient.post("/auth/update-task", {
+      let response = axiosClient.post("/tasks-project/update-task", {
         task_id: id,
       });
       const update_task = Promise.resolve(response);
@@ -170,7 +172,7 @@ export default {
       });
     },
     setCurrentTask: function (id) {
-      let response = axiosClient.post("/auth/update-task-current", {
+      let response = axiosClient.post("/tasks-project/update-task-current", {
         task_id: id,
       });
       const update_task_current = Promise.resolve(response);

@@ -9,6 +9,7 @@ import IndexProfile from '@/components/User/IndexProfile.vue';
 
 import store from '@/store';
 import ToDoListVue from '@/components/ToDoList.vue';
+import CalendarAppVue from '@/components/CalendarComp/CalendarApp.vue';
 const routes = [
     {
         path: '/',
@@ -56,6 +57,12 @@ const routes = [
         path: '/to-do-list',
         name: 'to-do-list',
         component: ToDoListVue,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/calendar',
+        name: 'calendar',
+        component: CalendarAppVue,
         meta: { requiresAuth: true }
     },
     {

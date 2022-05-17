@@ -103,7 +103,7 @@ export default {
           let formData = new FormData();
           formData.append("password", this.state.password);
           formData.append("email", this.email);
-          let response = axiosClient.post("/auth/change-password", formData);
+          let response = axiosClient.post("/user/change-password", formData);
           const reset_pass = Promise.resolve(response);
           reset_pass.then((value) => {
             var type = "";
@@ -124,7 +124,7 @@ export default {
     },
   },
   mounted() {
-    let response = axiosClient.post("/search-token", {
+    let response = axiosClient.post("/user/search-token", {
       token: this.$route.params.token,
     });
     const validity_token = Promise.resolve(response);

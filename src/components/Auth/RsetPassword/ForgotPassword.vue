@@ -51,7 +51,7 @@ export default {
       const response_validate = Promise.resolve(this.v$.$validate());
       response_validate.then((value) => {
         if (value == true) {
-          let response = axiosClient.post("/auth/search-email", {
+          let response = axiosClient.post("/user/search-email", {
             email: this.state.email,
           });
           const search_email = Promise.resolve(response);

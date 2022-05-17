@@ -179,7 +179,7 @@ export default {
           formData.append("email", this.state.email);
           formData.append("name", this.state.fname);
           formData.append("work_space", this.state.work_space);
-          let res = axiosClient.post("auth/register", formData, {
+          let res = axiosClient.post("/user/register", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
               charset: "utf-8",

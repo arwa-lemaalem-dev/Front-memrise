@@ -24,7 +24,7 @@
       </div>
       <div
         class="col-lg-4 col-md-6 col-sm-6 col-12 option-card"
-        data-scroll-reveal="enter bottom move 50px over 0.6s after 0.4s"
+        data-scroll-reveal="enter bottom move 50px over 0.6s after 0.4s" v-on:click="redirect('calendar')"
       >
         <div class="features-small-item">
           <div class="icon">
@@ -76,7 +76,7 @@
       <table class="table table-hover">
         <thead class="bg-light">
           <tr>
-            <th>Nom du Project</th>
+            <th class="th-">Nom du Project</th>
             <th>Date limite de projet</th>
             <th>Tâche courante</th>
             <th>Statut</th>
@@ -87,7 +87,12 @@
           <tr v-if="projects.length == 0" scope="row">
             <td colspan="5" class="empty">Empty</td>
           </tr>
-          <tr v-else v-for="project in projects" :key="project.id">
+          <tr
+            class="th-project"
+            v-else
+            v-for="project in projects"
+            :key="project.id"
+          >
             <td>
               <div class="d-flex flex-row">
                 <div class="p-2">
@@ -99,18 +104,16 @@
                   />
                 </div>
 
-                <div class="ms-3 col">
-                  <div class="row">
-                    <p class="fw-bold mb-1">{{ project.name_project }}</p>
-                  </div>
-                  <div class="row">
+                <div class="p-2">
+                  <p class="fw-bold mb-1">{{ project.name_project }}</p>
+                  <p>
                     <a
-                      class="text-muted mb-0"
+                      class="text-muted mb-0 title_project"
                       href="http://localhost/p3427_marketplace_for_agricultural_sector/public/admin/"
                       target="_blanck"
                       >{{ project.url }}</a
                     >
-                  </div>
+                  </p>
                 </div>
               </div>
             </td>
@@ -118,19 +121,22 @@
               <p class="fw-normal mb-1">{{ project.deadline }}</p>
             </td>
             <td>
-              <p class="fw-normal mb-1" v-if="project.task != null">
+              <p class="task-name fw-normal mb-1" v-if="project.task != null">
                 {{ project.task.name }}
               </p>
               <p class="fw-normal mb-1" v-else>------------------</p>
             </td>
-
             <td>
               <span class="badge rounded-pill badge-success">
                 {{ project.status }}
               </span>
             </td>
             <td>
-              <button data-mdb-toggle="modal" data-mdb-target="#suppModel">
+              <button
+                data-mdb-toggle="modal"
+                data-mdb-target="#suppModel"
+                @click="changeIdProject(project.id)"
+              >
                 <i class="fa fa-times fa-2x" title="Supprimer"></i>
               </button>
             </td>
@@ -228,7 +234,7 @@
                 </button>
               </div>
               <div class="col">
-                <button @click="addProject">
+                <button type="submit" @click="addProject">
                   <i class="fas fa-check fa-2x"></i>
                 </button>
               </div>
@@ -245,14 +251,24 @@
       aria-labelledby="suppModelLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog">
+      <div class="modal-dialog ">
         <div class="modal-content">
           <div class="modal-body">
             Voulez-vous supprimer cette application ?
           </div>
           <div class="row container btn-modal">
-            <div class="col"><button>Annuler</button></div>
-            <div class="col"><button>Ok</button></div>
+            <div class="col">
+              <button type="reset" data-mdb-dismiss="modal">Annuler</button>
+            </div>
+            <div class="col">
+              <button
+                type="submit"
+                @click="DeleteProject"
+                data-mdb-dismiss="modal"
+              >
+                Ok
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -273,6 +289,7 @@ export default {
       show_alert: true,
       logo: null,
       projects: [],
+      project_id: null,
     };
   },
   setup() {
@@ -336,9 +353,8 @@ export default {
             .then((response) => {
               if (response.data["status"] == 201) {
                 //get list of projects
-                this.getListProjects();
                 this.$refs.form_add.reset();
-
+                this.add_project = [];
                 this.$toast.show(response.data["response"], {
                   type: "success",
                   position: "top-right",
@@ -349,12 +365,11 @@ export default {
       });
     },
     getListProjects: function () {
-      let response = axiosClient.get("/auth/show-projects");
+      let response = axiosClient.get("/project/show-projects");
       const list_projects = Promise.resolve(response);
       list_projects.then((value) => {
         if (value.data["status"] == 200) {
           this.projects = value.data["projects"];
-          console.log(value.data);
         } else {
           //
         }
@@ -362,6 +377,27 @@ export default {
     },
     redirect: function (page) {
       this.$router.push({ name: page });
+    },
+    changeIdProject: function (id) {
+      this.project_id = id;
+    },
+    DeleteProject: function () {
+      axiosClient
+        .post("/project/delete-project", { project_id: this.project_id })
+        .then((response) => {
+          if (response.data["status"] == 200) {
+            this.$toast.show(response.data["response"], {
+              type: "success",
+              position: "top-right",
+            });
+            this.getListProjects();
+          } else {
+            this.$toast.show(response.data["response"], {
+              type: "error",
+              position: "top-right",
+            });
+          }
+        });
     },
   },
   mounted() {
@@ -378,9 +414,32 @@ export default {
 @import "../assets/css/bootstrap.min.css";
 /* @import '../assets/css/font-awesome.css'; */
 /* @import "../assets/css/templatemo-softy-pinko.css"; */
-.row {
-  position: relative;
-  left: auto;
+table thead th {
+  border-bottom: 2px solid #dee2e6;
+}
+.task-name {
+  display: block;
+  display: -webkit-box;
+  max-width: 200px;
+  margin: 0 auto;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.p-2 {
+  text-align: left;
+}
+.title_project {
+  display: -webkit-box;
+  max-width: 250px;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.th-project {
+  max-width: 200px;
 }
 .empty {
   color: #ffb6c1;
@@ -446,8 +505,11 @@ input.__input.form-control {
 .pink {
   background-color: #fff0f5;
 }
+
 .table-tache {
-  border-radius: 50% 20% / 10% 40%;
+  position: center;
+  border-radius: 20px;
+  width: 100%;
 }
 table {
   background-color: rgb(255, 255, 255, 0.7);

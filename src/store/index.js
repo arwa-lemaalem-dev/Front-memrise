@@ -8,14 +8,14 @@ export default new Vuex.Store({
     authenticated: false,
     user: null,
     token: null,
+    events: []
   },
   getters: {
-    isLogged(state) {
-      return state.authenticated;
-    },
+    isLogged: state =>state.authenticated,
     urlBackend() {
-      return "http://localhost:8081/back-end-memrise/public/storage";
+      return "http://localhost/back-end-memrise/storage/app/public/";
     },
+    Events: state => state.events
   },
   plugins: [createPersistedState()],
   mutations: {
@@ -33,7 +33,7 @@ export default new Vuex.Store({
     },
     session() {
       if (this.state.authenticated) {
-        let res = axiosClient.post("/valid-session", {
+        const res = axiosClient.post("/user/valid-session", {
           id: this.state.user["id"],
         });
         const session_user = Promise.resolve(res);
@@ -44,6 +44,15 @@ export default new Vuex.Store({
         });
       }
     },
+    ADD_EVENT:(state,event)=>{
+      state.events.push(event)
+    },
+    UPDATE_EVENT:(state,{id,title,start,end})=>{
+      let index=state.events.findIndex(event=>event.id===id);
+      state.events[index].title=title;
+      state.events[index].start=start;
+      state.events[index].end=end;
+    }
   },
   //actions :: sont des fonctions utilisé pour changer l'etate(state) ou pour commiter(commit)des mutations
   actions: {},

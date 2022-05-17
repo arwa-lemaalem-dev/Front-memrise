@@ -92,7 +92,7 @@ export default {
       });
     },
     login() {
-      let login = axiosClient.post("/auth/login", {
+      let login = axiosClient.post("/user/login", {
         password: this.state.password,
         email: this.state.email,
       });

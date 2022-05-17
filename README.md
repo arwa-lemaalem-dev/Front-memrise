@@ -15,3 +15,11 @@ npm i jquery
 
 Toaster 
 https://bestofvue.com/repo/MeForma-vue-toaster-vuejs-notification
+
+
+vue-final-modal 
+npm install vue-final-modal@next
+
+
+fullCalendar 
+npm install --save @fullcalendar/vue3 @fullcalendar/core
